@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Zoo API</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <header>
+        <link rel="stylesheet" type="text/css" href="Styles/main.css">
+        <script src="../scripts/jquery-3.1.1.min.js"></script>
+    </header>
+    <div class="loading" style="display:none; margin-left: 40%; margin-top: 60px;"></div>
+    <div>
+        <h1>Add Items</h1>
+    </div>
+
+    <div id="nav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a class="active" href="addItems.html">Add Items</a></li>
+        </ul>
+    </div>
+
+    <div id="main">
+        <div class="addForms" style="clear:left">
+            <fieldset >
+                <h3>Add family</h3>
+                <form id="addFamily">
+                    <label class="detailsLable">Family Name</label><input type="text" name="name"><br />
+                    <input type="submit" value="Add Family" />
+                </form>
+            </fieldset>
+        </div>
+
+        <div class="addForms" style="clear:left">
+            <fieldset>
+                <h3>Add Species</h3>
+                <form id="addSpecies">
+                    <label class="detailsLable">Species Name</label><input type="text" name="name"><br />
+                    <label class="detailsLable">Family</label>
+                    <select name="familyID" id="familySelect"></select>
+                    <br />
+                    <input type="submit" value="Add Species" />
+                </form>
+            </fieldset>
+        </div>
+
+        <div class="addForms" style="clear:left">
+            <fieldset>
+                <h3>Add Animal</h3>
+                <form id="addAnimal">
+                    <label class="detailsLable">Animal Name</label><input type="text" name="name"><br />
+                    <label class="detailsLable">Date of Birth</label><input type="text" name="DOB" placeholder="dd/mm/yyyy"><br />
+                    <label class="detailsLable">Gender</label><input type="text" name="gendder"><br />
+                    <label class="detailsLable">Species</label>
+                    <select name="speciesID" id="speciesSelect"></select>
+                    <br />
+                    <input type="submit" value="Add Animal"/>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+
+</body>
+</html>
+
+<script>
+    getFamily();
+    getSpecies();
+
+     function getFamily() {
+        var select = $("#familySelect");
+        select.empty();
+
+        $(".loading").show("slow");
+        $.ajax({
+            url: "../api/Families",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                allFamiyies = myData;
+                $(".loading").hide("slow");
+                for (var i = 0; i < myData.length; i++) {
+                    select.append("<option value='" + myData[i].ID + "'>" + myData[i].name + "</option>");
+                }
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    function getSpecies() {
+        var select = $("#speciesSelect");
+        select.empty();
+
+        $(".loading").show("slow");
+        $.ajax({
+            url: "../api/Species",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                $(".loading").hide("slow");
+                for (var i = 0; i < myData.length; i++) {
+                    select.append("<option value='" + myData[i].ID + "'>" + myData[i].name + "</option>");
+                }
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    $('#addFamily').on('submit', function (e) {
+        e.preventDefault();
+
+        $(".loading").show("slow");
+        $.ajax({
+            url: '../api/Families',
+            type: 'post',
+            data: $('#addFamily').serialize(),
+            success: function (myData) {
+                $('#addFamily').trigger("reset");
+                $(".loading").hide("slow");
+                getFamily();
+            },
+            fail: function (myData) {
+                alert("fail:   " + myData);
+                $(".loading").hide("slow");
+            }
+        });
+    });
+
+    $('#addSpecies').on('submit', function (e) {
+        e.preventDefault();
+
+        $(".loading").show("slow");
+        $.ajax({
+            url: '../api/Species',
+            type: 'post',
+            data: $('#addSpecies').serialize(),
+            success: function (myData) {
+                $('#addSpecies').trigger("reset");
+                $(".loading").hide("slow");
+                getSpecies();
+            },
+            fail: function (myData) {
+                alert("fail:   " + myData);
+                $(".loading").hide("slow");
+            }
+        });
+    });
+
+    $('#addAnimal').on('submit', function (e) {
+        e.preventDefault();
+
+        $(".loading").show("slow");
+        $.ajax({
+            url: '../api/Animals',
+            type: 'post',
+            data: $('#addAnimal').serialize(),
+            success: function (myData) {
+                $('#addAnimal').trigger("reset");
+                $(".loading").hide("slow");
+            },
+            fail: function (myData) {
+                alert("fail:   " + myData);
+                $(".loading").hide("slow");
+            }
+        });
+    });
+</script>

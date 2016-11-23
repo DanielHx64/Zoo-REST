@@ -1,0 +1,103 @@
+﻿body {
+    margin: auto;	
+}
+
+h1 {
+    
+    text-align: center;
+}
+
+p {
+    font-family: verdana;
+    font-size: 20px;
+}
+
+/*Navigation*/
+
+#nav {
+	background-color: #1c7720;
+}
+
+#nav ul {
+    list-style-type: none;
+    margin: 0px 20px 0px 20px;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+#nav li {
+    float: left;
+}
+
+#nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#nav li a:hover {
+    background-color: #111;
+}
+
+#nav a.active {
+    background-color: #1c7720;
+}
+
+#nav li.right {
+	float: right;
+}
+
+ .loading{
+	background-image: url("loadingGif.gif");
+	background-repeat: no-repeat;
+	width: 250px;
+	height: 188px;
+	position: fixed;
+	z-index: 5000;
+}
+
+ label.detailsLable {
+    width: 100px;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+ table {
+     border-collapse: collapse;
+    font: 11px verdana,arial,helvetica,sans-serif;
+    color: #000;
+    background: none repeat scroll 0% 0% #F3F3F3;
+    border-radius: 5px;
+    border: 1px solid #666;
+    margin: 10px;
+    width: 40%;
+}
+
+ th{
+    background-color: #1c7720;
+    color: white;
+    border-color: #9B9B9B;
+    font-size: 12px;
+}
+td{
+	border-color: #9B9B9B;
+}
+
+tr {
+    border-bottom: solid black 1px;
+}
+
+#animalTable{
+    float:left;
+}
+#editAnimal{
+    float:left;
+    margin:10px;
+}
+
+label {
+    margin-left: 10px;
+}

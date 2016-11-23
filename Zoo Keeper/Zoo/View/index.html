@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Zoo API</title>
+	<meta charset="utf-8" />
+</head>
+<body>
+    <header>
+        <link rel="stylesheet" type="text/css" href="Styles/main.css">
+        <script src="../scripts/jquery-3.1.1.min.js"></script>
+    </header>
+    <div class="loading" style="display:none; margin-left: 40%; margin-top: 60px;"></div>
+    <div>
+        <h1>Home</h1>
+    </div>
+
+    <div id="nav">
+        <ul>
+            <li><a class="active" href="index.html">Home</a></li>
+            <li><a href="addItems.html">Add Items</a></li>
+        </ul>
+    </div>
+
+    <div id="main">
+        <p>Upon Inisilation it takes a while for the data to load after however it should speed up</p>
+        <br />
+        <br />
+        <div>
+            <label>Select Family</label>
+            <select id="familySelect" onchange="getSpecies(this.value)">
+                <option value="all">All</option>
+            </select>
+            <br />
+            <br />
+
+            <label>Select Species</label>
+            <select id="speciesSelect" onchange="getAnimals(this.value)">
+                <option value="all">All</option>
+            </select>
+            <br />
+            <br />  
+        </div>
+        
+        <label style="clear:both">Animals</label>
+        <br />
+        <table id="animalTable">
+            <tr>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Species</th>
+                <th>Family</th>
+                <th>Behaviour</th>
+                <th>Commands</th>
+            </tr>
+        </table>
+        <fieldset id="editAnimal">
+            <h3>Edit Animal</h3>
+            <form id="editForm">
+                <label class="detailsLable">ID</label><input type="text" name="ID" id="animalID"><br />
+                <label class="detailsLable">Name</label><input type="text" name="name" id="animalName" /><br />
+                <label class="detailsLable">DOB</label><input type="text" name="DOB" id="animalDOB" /><br />
+                <label class="detailsLable">Gender</label><input type="text" name="gendder" id="animalGender" /><br />
+                <input name="speciesID" id="animalSpeciesID" style="display:none" />
+            </form>
+           
+            <button onclick="saveAnimal()" class="detailsLable">Save</button>
+            <button onclick="deleteAnimal()" class="detailsLable">Delete</button>
+        </fieldset>
+    </div>
+</body>
+</html>
+
+<script>
+    getFamily();
+    getSpecies("all");
+    getBehaviours();
+    $(".loading").show("slow");
+    var allSpecies;
+    var allFamiyies;
+    var allBehaviours;
+    var allBehavioursLinks;
+
+    function getFamily() {
+        var select = $("#familySelect");
+        select.empty();
+        select.append("<option value='all'>All</option>")
+
+        $.ajax({
+            url: "../api/Families",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                allFamiyies = myData;
+                $(".loading").hide("slow");
+                for (var i = 0; i < myData.length; i++) {
+
+                    select.append("<option value='" + myData[i].ID + "'>" + myData[i].name + "</option>");
+                }
+
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    function getSpecies(value) {
+        var select = $("#speciesSelect");
+        select.empty();
+        select.append("<option value='all'>All</option>")
+
+        $.ajax({
+            url: "../api/Species",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                $(".loading").hide("slow");
+                allSpecies = myData;
+                if (value == "all") {
+                    for (var i = 0; i < myData.length; i++) {
+                        select.append("<option value='" + myData[i].ID + "'>" + myData[i].name + "</option>");
+                     }
+                 } else {
+                    for (var i = 0; i < myData.length; i++) {
+                        if(myData[i].familyID == value){
+                            select.append("<option value='" + myData[i].ID + "'>" + myData[i].name + "</option>");
+                        }
+                    }
+                }
+
+                getAnimals("all");
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    function getAnimals(value) {
+        var animalTable = $("#animalTable");
+        $("#animalTable tr:not(:first)").remove();
+        
+        if (typeof value == 'undefined') {
+            value = $("#speciesSelect option:selected").val();
+            
+        }
+
+        $.ajax({
+            url: "../api/Animals",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                $(".loading").hide("slow");//hide the loding gif
+
+                var tableRowCount = 0; //this veriable counts what row we are currently adding
+                if (value == "all") {
+                    var familyIDSelect = $("#familySelect option:selected").val();//get the current value of the family select
+                    if (familyIDSelect == "all") {
+                        for (var i = 0; i < myData.length; i++) {
+                            //get the species and family name from the global var naughty yes i know but saves another ajax call
+                            var species = "";
+                            var family = "";
+                            for (var s = 0; s < allSpecies.length; s++) {
+                                if (allSpecies[s].ID == myData[i].speciesID){
+                                    species = allSpecies[s].name;
+                                    for (var f = 0 ; f < allFamiyies.length; f++) {
+                                        if (allFamiyies[f].ID == allSpecies[s].familyID) {
+                                            family = allFamiyies[f].name;
+                                        }
+                                    }
+                                }
+                            }
+                            var buttonDetails = "<button onclick=getAnimalDetails(" + myData[i].ID + ")>Details</button>";
+                            var row = "<tr><td>" + myData[i].name + "</td><td>" + myData[i].DOB + "</td><td>" + species + "</td><td>" + family + "</td><td id='row" + tableRowCount + "'></td><td>" + buttonDetails + "</td></tr>";
+                            $(animalTable).append(row);
+                            displayBehaviour(myData[i].speciesID, tableRowCount);
+                            tableRowCount++;
+                        }
+                    }
+                    else {// here we are filtering all the animals based on family 
+
+                        var okSpecies = []; //make and empty array this will hold the valid species for the selected family
+ 
+                        for (var s = 0; s < allSpecies.length; s++) {//loop throught the species we need to find a match for the family
+                            if (allSpecies[s].familyID == familyIDSelect){
+                                okSpecies.push(allSpecies[s].ID);
+                            } 
+                        }
+
+                        for (var i = 0; i < myData.length; i++) {
+                            var check = 0;//make a check to see if this animal is part of the valid species
+                            for (var os = 0; os < okSpecies.length; os++) {
+                                if (okSpecies[os] == myData[i].speciesID){
+                                    check = 1;
+                                }
+                            }
+                            if (check) {
+                                //get the species and family name from the global var naughty yes i know but saves another ajax call
+                                var species = "";
+                                var family = "";
+                                for (var s = 0; s < allSpecies.length; s++) {
+                                    if (allSpecies[s].ID == myData[i].speciesID) {
+                                        species = allSpecies[s].name;
+                                        for (var f = 0 ; f < allFamiyies.length; f++) {
+                                            if (allFamiyies[f].ID == allSpecies[s].familyID) {
+                                                family = allFamiyies[f].name;
+                                            }
+                                        }
+
+                                    }
+                                }
+                                var buttonDetails = "<button onclick=getAnimalDetails(" + myData[i].ID + ")>Details</button>";
+                                var row = "<tr><td>" + myData[i].name + "</td><td>" + myData[i].DOB + "</td><td>" + species + "</td><td>" + family + "</td><td id='row" + tableRowCount + "'></td><td>" + buttonDetails + "</td></tr>";
+                                $(animalTable).append(row);
+                                displayBehaviour(myData[i].speciesID, tableRowCount);
+                                tableRowCount++;
+                            }
+                            
+                        }
+                    }
+                }
+                else {
+                    //get the species and family name from the global var naughty yes i know but saves another ajax call
+                    var species = "";
+                    var family = "";
+                    for (var s = 0; s < allSpecies.length; s++) {
+                        if (allSpecies[s].ID == value) {
+                            species = allSpecies[s].name;
+                            for (var f = 0 ; f < allFamiyies.length; f++) {
+                                if (allFamiyies[f].ID == allSpecies[s].familyID) {
+                                    family = allFamiyies[f].name;
+                                }
+                            }
+                        }
+                    }
+
+                    for (var i = 0; i < myData.length; i++) {
+                        if (myData[i].speciesID == value) {
+                            
+                            var buttonDetails = "<button onclick=getAnimalDetails(" + myData[i].ID + ")>Details</button>";
+                            var row = "<tr><td>" + myData[i].name + "</td><td>" + myData[i].DOB + "</td><td>" + species + "</td><td>" + family + "</td><td id='row" + tableRowCount +"'></td><td>" + buttonDetails + "</td></tr>";
+                            $(animalTable).append(row);
+                            displayBehaviour(value, tableRowCount);
+                            tableRowCount++;
+                        }
+                    }
+                }               
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    function getBehaviours() {
+
+        $.ajax({
+            url: "../api/Behaviours",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                allBehaviours = myData;
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+
+        $.ajax({
+            url: "../api/BehaviourLinks",
+            type: "GET",
+            dataType: "JSON",
+            success: function (myData) {
+                allBehavioursLinks = myData;
+            },
+            fail: function (myData) {
+                console.info("fail");
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    function displayBehaviour(speciesID, rowID) {
+        console.log("speciesID:" + speciesID + "  rowID: " + rowID );
+
+        var behaviour = "no Behavour";
+        for (var i = 0; i < allBehavioursLinks.length; i++) {
+            if (allBehavioursLinks[i].speciesID == speciesID) {
+                for (var b = 0; b < allBehaviours.length; b++) {
+                    if (allBehavioursLinks[i].behaviorID == allBehaviours[b].ID) {
+                        behaviour = allBehaviours[b].name;
+                    }
+                }
+            }
+        }
+        $("#row" + rowID).html(behaviour);
+            
+    }
+
+    function getAnimalDetails(value) {
+        var uri = "../api/Animals/" + value;
+        $(".loading").show("slow");
+
+        $.ajax({
+            url: uri,
+            type: 'GET',
+            dataType: "JSON",
+            success: function (myData) {
+
+                $("#animalID").val(myData.ID);
+                $("#animalName").val(myData.name);
+                $("#animalDOB").val(myData.DOB);
+                $("#animalGender").val(myData.gendder);
+                $("#animalSpeciesID").val(myData.speciesID);
+                $(".loading").hide("slow");
+                            },
+            fail: function (myData) {
+                $(".loading").hide("slow");
+            }
+        });
+    }
+
+    function saveAnimal() {
+        
+        var ID = $("#animalID").val();
+
+        if (ID != "") {
+            var name = $("#animalName").val();
+            var dob = $("#animalDOB").val();
+            var gender = $("#animalGender").val();
+
+            var uri = "../api/Animals/" + ID;
+            $.ajax({
+                url: uri,
+                type: 'PUT',
+                data: $('#editForm').serialize(),
+                dataType: "JSON",
+                success: function (myData) {
+                    $(".loading").hide("slow");
+                    getAnimals();
+                },
+                fail: function (myData) {
+                    $(".loading").hide("slow");
+                }
+            });
+        }
+    }
+
+    function deleteAnimal() {
+        var ID = $("#animalID").val();
+
+        if (confirm("Do you want to delete this animal?")) {
+            if (ID != "") {
+                var uri = "../api/Animals/" + ID;
+                $.ajax({
+                    url: uri,
+                    type: 'DELETE',
+                    dataType: "JSON",
+                    success: function (myData) {
+                        $(".loading").hide("slow");
+                        getAnimals();
+                        $("#animalID").val("");
+                        $("#animalName").val("");
+                        $("#animalDOB").val("");
+                        $("#animalGender").val("");
+                    },
+                    fail: function (myData) {
+                        $(".loading").hide("slow");
+                    }
+                });
+            }
+        }
+       
+    }
+    
+
+</script>
