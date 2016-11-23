@@ -10,6 +10,5 @@ namespace Zoo
         public int ID { get; set; }
         public String Name { get; set; }
         public String Stuff { get; set; }
-
 	}
 }

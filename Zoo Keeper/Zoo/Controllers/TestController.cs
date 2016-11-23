@@ -16,10 +16,12 @@ namespace Zoo.Controller
             new Test { ID = 3, Name = "Hammer", Stuff = "Hardware"}
         };
 
+
         public IEnumerable<Test> GetAllTests()
         {
             return Tests;
         }
+
 
         public IHttpActionResult GetTest(int id)
         {
