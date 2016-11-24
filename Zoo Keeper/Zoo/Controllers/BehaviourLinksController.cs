@@ -17,12 +17,14 @@ namespace Zoo.Controllers
         private ZooContext db = new ZooContext();
 
         // GET: api/BehaviourLinks
+        [HttpGet]
         public IQueryable<BehaviourLink> GetBehaviourLinks()
         {
             return db.BehaviourLinks;
         }
 
         // GET: api/BehaviourLinks/5
+        [HttpGet]
         [ResponseType(typeof(BehaviourLink))]
         public IHttpActionResult GetBehaviourLink(int id)
         {
@@ -36,6 +38,7 @@ namespace Zoo.Controllers
         }
 
         // PUT: api/BehaviourLinks/5
+        [HttpPut]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutBehaviourLink(int id, BehaviourLink behaviourLink)
         {
@@ -71,6 +74,7 @@ namespace Zoo.Controllers
         }
 
         // POST: api/BehaviourLinks
+        [HttpPost]
         [ResponseType(typeof(BehaviourLink))]
         public IHttpActionResult PostBehaviourLink(BehaviourLink behaviourLink)
         {
@@ -86,6 +90,7 @@ namespace Zoo.Controllers
         }
 
         // DELETE: api/BehaviourLinks/5
+        [HttpDelete]
         [ResponseType(typeof(BehaviourLink))]
         public IHttpActionResult DeleteBehaviourLink(int id)
         {

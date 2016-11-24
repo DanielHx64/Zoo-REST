@@ -19,12 +19,14 @@ namespace Zoo.Controllers
         private ZooContext db = new ZooContext();
 
         // GET: api/Species
+        [HttpGet]
         public IQueryable<Species> GetSpecies()
         {
             return db.Species;
         }
 
         // GET: api/Species/5
+        [HttpGet]
         [ResponseType(typeof(Species))]
         public IHttpActionResult GetSpecies(int id)
         {
@@ -38,6 +40,7 @@ namespace Zoo.Controllers
         }
 
         // PUT: api/Species/5
+        [HttpPut]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutSpecies(int id, Species species)
         {
@@ -73,6 +76,7 @@ namespace Zoo.Controllers
         }
 
         // POST: api/Species
+        [HttpPost]
         [ResponseType(typeof(Species))]
         public IHttpActionResult PostSpecies(Species species)
         {
@@ -88,6 +92,7 @@ namespace Zoo.Controllers
         }
 
         // DELETE: api/Species/5
+        [HttpDelete]
         [ResponseType(typeof(Species))]
         public IHttpActionResult DeleteSpecies(int id)
         {
@@ -99,28 +104,6 @@ namespace Zoo.Controllers
 
             db.Species.Remove(species);
             db.SaveChanges();
-
-            return Ok(species);
-        }
-
-        [Route("getFamily/{familyID}")] //tried and faild attempt of creating a new route
-        [ResponseType(typeof(Species))]
-        public async Task<IHttpActionResult> GetFamily(int id)
-        {
-            var species = await db.Species
-                .Where(s => s.familyID == id)
-                .Select(s => new Species
-                {
-                    ID = s.ID,
-                    name = s.name,
-                    familyID = s.familyID,
-                    family = s.family
-                }).SingleOrDefaultAsync();
-
-            if (species == null)
-            {
-                return NotFound();
-            }
 
             return Ok(species);
         }

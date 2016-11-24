@@ -17,12 +17,14 @@ namespace Zoo.Controllers
         private ZooContext db = new ZooContext();
 
         // GET: api/Animals
+        [HttpGet]
         public IQueryable<Animals> GetAnimals()
         {
             return db.Animals;
         }
 
         // GET: api/Animals/5
+        [HttpGet]
         [ResponseType(typeof(Animals))]
         public IHttpActionResult GetAnimals(int id)
         {
@@ -36,6 +38,7 @@ namespace Zoo.Controllers
         }
 
         // PUT: api/Animals/5
+        [HttpPut]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutAnimals(int id, Animals animals)
         {
@@ -71,6 +74,7 @@ namespace Zoo.Controllers
         }
 
         // POST: api/Animals
+        [HttpPost]
         [ResponseType(typeof(Animals))]
         public IHttpActionResult PostAnimals(Animals animals)
         {
@@ -86,6 +90,7 @@ namespace Zoo.Controllers
         }
 
         // DELETE: api/Animals/5
+        [HttpDelete]
         [ResponseType(typeof(Animals))]
         public IHttpActionResult DeleteAnimals(int id)
         {

@@ -22,7 +22,8 @@
     </div>
 
     <div id="main">
-        <p>Upon Inisilation it takes a while for the data to load after however it should speed up</p>
+        <p>Upon Inisilation it takes a while for the data to load, after however it should speed up</p>
+        <p>If you want to see whats going on open up the network console and refresh</p>
         <br />
         <br />
         <div>
@@ -67,6 +68,9 @@
             <button onclick="deleteAnimal()" class="detailsLable">Delete</button>
         </fieldset>
     </div>
+    <br />
+    <label>Test for a new Route <br /> api/Families/GetFamilyDetails/{familyID}</label><br />
+    <button onclick="test()">Test New Route</button>
 </body>
 </html>
 
@@ -285,7 +289,6 @@
     }
 
     function displayBehaviour(speciesID, rowID) {
-        console.log("speciesID:" + speciesID + "  rowID: " + rowID );
 
         var behaviour = "no Behavour";
         for (var i = 0; i < allBehavioursLinks.length; i++) {
@@ -324,8 +327,7 @@
         });
     }
 
-    function saveAnimal() {
-        
+    function saveAnimal() {        
         var ID = $("#animalID").val();
 
         if (ID != "") {
@@ -377,5 +379,20 @@
        
     }
     
-
+    function test() {
+        uri = "../api/Families/GetFamilyDetails/1";
+        $.ajax({
+            url: uri,
+            type: 'GET',
+            dataType: "JSON",
+            success: function (myData) {
+                alert("look in the console for resonce");
+                console.log(myData);
+                console.log("To see the code for this its in FamiliesController in a function called GetFamilyDetails");
+            },
+            fail: function (myData) {
+                $(".loading").hide("slow");
+            }
+        });
+    }
 </script>
